@@ -1,0 +1,22 @@
+{
+  "name": "codemate",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "npm install --prefix server && npm install --prefix web && npm run build --prefix web",
+    "start": "npm run start --prefix server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SamirCoder16/Code-Mate.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/SamirCoder16/Code-Mate/issues"
+  },
+  "homepage": "https://github.com/SamirCoder16/Code-Mate#readme"
+}
