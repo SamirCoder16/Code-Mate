@@ -7,6 +7,7 @@ import fs from "fs";
 import { ENV } from "./lib/env.js";
 import path from "path";
 import { fileURLToPath } from "url";
+import { connectDB } from "./config/db.config.js";
 
 const PORT = ENV.PORT;
 const app = express();
@@ -27,8 +28,8 @@ if (ENV.NODE_ENV === "production") {
           defaultSrc: ["'self'"],
           scriptSrc: ["'self'", "'unsafe-inline'"],
           styleSrc: ["'self'", "'unsafe-inline'"],
-          imgSrc: ["'self'", 'data:'],
-          fontSrc: ["'self'", 'data:', 'https:'],
+          imgSrc: ["'self'", "data:"],
+          fontSrc: ["'self'", "data:", "https:"],
           connectSrc: ["'self'"],
           objectSrc: ["'none'"],
           baseUri: ["'self'"],
@@ -77,13 +78,11 @@ app.get("/books", (req, res) => {
 // Serve SPA static files if build exists (works in production and allows quick local testing)
 const staticPath = path.join(__dirname, "..", "..", "web", "dist");
 if (fs.existsSync(staticPath)) {
-  console.log("Serving static files from:", staticPath);
   app.use(express.static(staticPath));
 
   // catch-all route to serve index.html for client-side routing
   app.get("/{*any}", (req, res) => {
     const indexPath = path.join(staticPath, "index.html");
-    console.log("Sending index.html ->", indexPath);
     res.sendFile(indexPath);
   });
 } else {
@@ -94,8 +93,18 @@ if (fs.existsSync(staticPath)) {
   );
 }
 
-app.listen(PORT, () => {
-  console.log(`Server is running on PORT ===> ${PORT}`);
-});
+const startServer = async () => {
+  try {
+    await connectDB();
+    app.listen(PORT, () => {
+      console.log(`Server is running on PORT ===> ${PORT}`);
+    });
+  } catch (error) {
+    console.error("Failed to start server:", error);
+    process.exit(1); // Exit with failure
+  }
+};
+
+startServer();
 
 export default app;
