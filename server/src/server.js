@@ -8,9 +8,8 @@ import { ENV } from "./lib/env.js";
 import path from "path";
 import { fileURLToPath } from "url";
 import { connectDB } from "./config/db.config.js";
-import { serve } from 'inngest/express';
+import { serve } from "inngest/express";
 import { inngest, functions } from "./lib/inngest.js";
-
 
 const PORT = ENV.PORT;
 const app = express();
@@ -19,38 +18,40 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
-if(ENV.NODE_ENV === 'production'){
-  app.use(cors({
-    origin: ENV.CORS_ORIGIN,
-    credentials: true
-  }))
-}else{
-  app.use(cors({
-    origin:'http://localhost:5173',
-    credentials: true
-  }));
+if (ENV.NODE_ENV === "production") {
+  app.use(
+    cors({
+      origin: ENV.CORS_ORIGIN,
+      credentials: true,
+    })
+  );
+} else {
+  app.use(
+    cors({
+      origin: "http://localhost:5173",
+      credentials: true,
+    })
+  );
 }
 
 // Helmet: enable sensible defaults. Disable CSP in development to avoid blocking
 // Devtools and fonts while you're iterating. In production, enable a relaxed CSP.
 if (ENV.NODE_ENV === "production") {
-  app.use(
-    helmet({
-      contentSecurityPolicy: {
-        directives: {
-          defaultSrc: ["'self'"],
-          scriptSrc: ["'self'", "'unsafe-inline'"],
-          styleSrc: ["'self'", "'unsafe-inline'"],
-          imgSrc: ["'self'", "data:"],
-          fontSrc: ["'self'", "data:", "https:"],
-          connectSrc: ["'self'"],
-          objectSrc: ["'none'"],
-          baseUri: ["'self'"],
-          formAction: ["'self'"],
-        },
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+        fontSrc: ["'self'", "data:", "https://fonts.gstatic.com"],
+        imgSrc: ["'self'", "data:"],
+        connectSrc: ["'self'"],
+        objectSrc: ["'none'"],
+        baseUri: ["'self'"],
+        formAction: ["'self'"],
       },
-    })
-  );
+    },
+  });
 } else {
   // In development, turn off CSP so fonts, devtools endpoints, and HMR can work
   app.use(
@@ -87,7 +88,7 @@ app.get("/books", (req, res) => {
 });
 
 // Routes Api gateway
-app.use('/api/inngest', serve({ client: inngest, functions }));
+app.use("/api/inngest", serve({ client: inngest, functions }));
 
 // Serve SPA static files if build exists (works in production and allows quick local testing)
 const staticPath = path.join(__dirname, "..", "..", "web", "dist");
