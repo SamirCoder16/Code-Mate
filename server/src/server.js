@@ -26,7 +26,7 @@ if(ENV.NODE_ENV === 'production'){
   }))
 }else{
   app.use(cors({
-    origin: ENV.CORS_ORIGIN || '*',
+    origin:'http://localhost:5173',
     credentials: true
   }));
 }
